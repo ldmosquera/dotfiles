@@ -1,0 +1,82 @@
+#!/bin/bash
+
+#this file should probably be plain POSIX sh compatible, but I've never had the need.
+
+#these are bold console colors:
+red="\033[1;31m"
+green="\033[1;32m"
+yellow="\033[1;33m"
+blue="\033[1;34m"
+pink="\033[1;35m"
+lightBlue="\033[1;36m"
+white="\033[1;37m"
+normal="\033[0m"
+
+#minimalist prompt with colored hostname - example: user@host:~$ 
+export PS1='\u@'$yellow'\h'$normal':\w'
+case `id -u` in
+    0) PS1=$PS1'# ' ;;
+    *) PS1=$PS1'$ ' ;;
+esac
+
+shopt -s checkwinsize
+shopt -s nocaseglob
+
+#make 'history' bash builtin usable:
+export HISTCONTROL="ignoredups"
+export HISTTIMEFORMAT="%Y-%m-%d %T  "
+#FIXME: sometimes, somehow, bash still loses history; fix this shit once and for all
+export HISTSIZE=50000
+export HISTFILESIZE=1000000
+
+export SHELL
+export EDITOR="vim"
+export PAGER="less"
+
+#complete sudo commands
+complete -c sudo
+complete -f sudo
+
+#region set up PATH
+
+#put $HOME/bin and its subdirectories in PATH (ignores */.git/* so you can safely throw submodules in here):
+if [[ -d ~/bin ]] ; then
+    currentIFS=$IFS; IFS=$'\n'
+
+    for d in $(find ~/bin -type d -a \! -wholename '*/.git/*'); do
+        PATH="$d:$PATH"
+    done
+    
+    IFS="$currentIFS"; unset currentIFS
+fi
+
+#If this file exists, it may list dirs to be filtered out of $PATH.
+#Useful in Cygwin, where PATH usually comes with gobs of stuff that 1. you don't care about and 2. slows down tab completion
+pathIgnoreFile="$HOME/.path_ignore"
+if [[ -f "$pathIgnoreFile" ]]; then
+    PATH="`
+        echo $PATH | tr : '\n' |
+        #filter out...
+        grep -vf <(
+            #... these lines:
+            cat $pathIgnoreFile    |
+            #but ignore ones that start with a # character or that are blank
+            grep -v -e '^#' -e '^[[:blank:]]*$' ) |
+        tr '\n' :`"
+fi
+unset pathIgnoreFile
+
+export PATH
+
+#endregion
+
+#bash source any files in here:
+partsDir="$HOME/.profile.d"
+if [[ -d "$partsDir" ]]; then
+    for f in "$partsDir"/*; do
+        source "$f"
+    done
+fi
+
+# vim: foldmarker=#region,#endregion foldmethod=marker expandtab ts=4 :
+
