@@ -1,0 +1,10 @@
+#ignore everything:
+/*
+#but whitelist these:
+!/.gitmodules
+!/bin
+!/.profile.d
+!/.vim
+#do ignore these:
+.vim/.netrwhist
+.vim/doc/tags
