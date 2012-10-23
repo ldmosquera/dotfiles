@@ -1,0 +1,16 @@
+[color]
+	diff = true
+	status = true
+	log = true
+[user]
+	#name = John Doe
+	#email = johndoe@thedoes.com
+[gui]
+	spellingdictionary = none
+	stageuntracked = no
+[alias]
+	wc = whatchanged
+	cp = cherry-pick
+	pr = peek-remote
+	mt = mergetool -t vimdiff
+	dt = difftool -t vimdiff
