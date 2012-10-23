@@ -1,0 +1,11 @@
+shell /bin/bash
+startup_message off
+
+hardstatus on
+hardstatus message
+
+escape ^Tt
+
+caption always "%-w%{wk}%n %t%{dd}%+w %=%H | %Y-%m-%d %c"
+
+scrollback 10000
